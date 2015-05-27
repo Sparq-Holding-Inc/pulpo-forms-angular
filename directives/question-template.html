@@ -1,0 +1,211 @@
+<div class="form-group">
+  <div class="animate-switch-container" ng-switch on="question.field_type">
+
+    <!-- Uruguay's Identity document field-->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='CIField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+      <button style="border:none;background:none"
+              ng-show="question.tooltip!=undefined && question.tooltip!=''"
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>
+      <input class="form-control CIField" 
+            type="text" 
+            pattern="^[0-9]{6,8}$"
+            ng-model="question.answer[0]"
+            ng-required="question.required && showValues[question.field_id]"
+      />
+    </div>
+
+    <!-- Text Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='TextField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+      <button style="border:none;background:none"
+              ng-show="question.tooltip!=undefined && question.tooltip!=''"
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>
+      <input  class="form-control TextField"
+              type="text" 
+              ng-model="question.answer[0]"  
+              ng-required="question.required && showValues[question.field_id]"
+              ng-maxlength="{{question.validations.max_len_text}}"
+              fieldtype="{{question.field_type}}"
+              validate
+      />
+    </div>
+
+    <!-- Checkbox Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='CheckboxField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+      <button style="border:none;background:none"
+              ng-show="question.tooltip!=undefined && question.tooltip!=''"
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>
+
+      <div ng-repeat ="option in question.options" >
+        <div class="checkbox" ng-required="question.required">
+          <label>
+            <input type="checkbox" 
+                    style="background-color:red;"
+                    checklist-model="question.answer" 
+                    checklist-value="option.id" 
+                    checklist-change="updateDependencies(question.field_id)"> {{option.label}}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Select Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='SelectField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+
+      <button style="border:none;background:none"
+              ng-show="question.tooltip!=undefined && question.tooltip!=''"
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>  
+      <select class="form-control SelectField"
+              ng-model="question.answer[0]"  
+              ng-required="question.required && showValues[question.field_id]"
+              ng-options="option.id as option.label for option in question.options"
+              ng-change="updateDependencies(question.field_id)">
+      </select>
+    </div>
+
+    <!-- Email Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='EmailField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+
+      <button style="border:none;background:none"
+              ng-show="question.tooltip!=undefined && question.tooltip!=''"
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>    
+      <input  class="form-control EmailField" 
+              type="text" 
+              ng-model="question.answer[0]"  
+              ng-required="question.required && showValues[question.field_id]"
+      /> 
+    </div>
+
+    <!-- File Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='FileField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+
+      <button style="border:none;background:none" 
+            ng-show="question.tooltip!=undefined && question.tooltip!=''" 
+            tooltip="{{question.tooltip}}"
+            tooltip-trigger tooltip-placement="top">
+            <span class="glyphicon glyphicon-info-sign"></span>
+      </button>
+      <input  type="file"  
+              class="FileField"
+              ng-file-select="onFileSelect($files,question)" 
+              fieldtype="{{question.field_type}}" 
+              ng-required="question.required && showValues[question.field_id]"
+              style="color: transparent">
+      </input>
+      <span ng-show="fileName(question.answer)" style="padding-left:10px;">
+          {{fileName(question.answer)}}
+      </span>
+    </div>
+
+    <!-- Geo Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='GeoField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+
+      <button style="border:none;background:none"
+              ng-show="question.tooltip!=undefined && question.tooltip!=''"
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>
+      <div  id={{question.field_id}} 
+            class="map-canvas-visor" 
+            ng-required="question.required && showValues[question.field_id]" >
+          {{loadmap(question)}}
+      </div>
+    </div>
+
+    <!-- Number Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='NumberField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+
+      <button style="border:none;background:none" 
+              ng-show="question.tooltip!=undefined && question.tooltip!=''" 
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>
+      <input  type="number"
+              class="form-control NumberField" 
+              ng-model="question.answer[0]" 
+              ng-change="updateDependencies(question.field_id)"
+              ng-required="question.required && showValues[question.field_id]"
+              min="{{question.validations.min_number}}"
+              max="{{question.validations.max_number}}"
+              ng-init="question.answer[0] ? question.answer[0] : question.answer[0]=null"
+      />
+    </div>
+
+    <!-- Text Area Field -->
+    <div ng-show="showValues[question.field_id]" ng-switch-when='TextAreaField'>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+
+      <button style="border:none;background:none"
+              ng-show="question.tooltip!=undefined && question.tooltip!=''"
+              tooltip="{{question.tooltip}}"
+              tooltip-trigger tooltip-placement="top">
+        <span class="glyphicon glyphicon-info-sign"></span>
+      </button>
+    
+      <textarea class="form-control TextAreaField"
+                type="text"
+                ng-model="question.answer[0]"
+                ng-required="question.required && showValues[question.field_id]"
+                ng-maxlength="{{question.validations.max_len_text}}"
+      />
+    </div>
+
+    <!--  Field -->
+    <!-- 
+    <div ng-show="showValues[question.field_id]" ng-switch-when=''>
+      <label class="{{question.field_type}}">{{question.text}}
+        <span style="color:red;" ng-show="question.required">*</span>
+      </label>
+
+
+    </div>
+     -->
+    <div ng-show="showValues[question.field_id]" ng-switch-default>
+      <label class="TextField">This field type is not supported</label>
+    </div>
+
+  </div>
+</div>
+<!-- hr -->
